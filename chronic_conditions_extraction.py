@@ -1,4 +1,9 @@
-read_csv()
+df = pd.read_csv(r'C:\Users\Sheer Wolff\Documents\GitHub\test repo\bquxjob_c4593bd_1830d329e03.csv')
+df["drug_name"] = df["drug_name"].str.split(" ", n = 1, expand = False).str.get(0)
+drugs_by_conditions = pd.read_csv(r'C:\Users\Sheer Wolff\Documents\GitHub\test repo\drug_names_list.csv')
+
+outputframe = chronic_conditions_extraction(df, drugs_by_conditions)
+
 
 
 def chronic_conditions_extraction(df: pd.DataFrame, drugs_by_conditions: pd.DataFrame):
@@ -36,7 +41,7 @@ def chronic_conditions_extraction(df: pd.DataFrame, drugs_by_conditions: pd.Data
         df_person.loc[list(df_split.groups.keys()).index(member), 'member_id'] = member
         for condition_col in drugs_by_conditions.columns:
             # count the number of drugs in member_df['drug_name'] which are in drugs_by_conditions[condition_col]
-            condition_member_df = member_df.loc[member_df.loc[:, 'drug_name'].isin(drugs_by_conditions[condition_col])]
+            condition_member_df = member_df.loc[member_df.loc[:, 'drug_name'].isin(drugs_by_conditions[condition_col].str.upper())]
             # condition_drug_count = condition_member_df.shape[0]  <-- counts total number of meds, not unique
             condition_drug_count = condition_member_df.loc[:,'drug_name'].nunique() # <-- counts only num of unique meds
             df_person.loc[list(df_split.groups.keys()).index(member), 'has_' + condition_col] = condition_drug_count
